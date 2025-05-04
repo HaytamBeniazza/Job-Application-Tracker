@@ -1,0 +1,97 @@
+<template>
+    <lightning-card title="Export Job Applications" icon-name="standard:report">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-gutters slds-wrap">
+                <!-- Filter section -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
+                    <lightning-input 
+                        type="date" 
+                        label="Start Date" 
+                        name="startDate"
+                        value={startDate}
+                        onchange={handleDateChange}>
+                    </lightning-input>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
+                    <lightning-input 
+                        type="date" 
+                        label="End Date" 
+                        name="endDate"
+                        value={endDate}
+                        onchange={handleDateChange}>
+                    </lightning-input>
+                </div>
+                
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-p-bottom_small">
+                    <lightning-combobox
+                        label="Status"
+                        name="status"
+                        value={selectedStatus}
+                        options={statusOptions}
+                        onchange={handleStatusChange}>
+                    </lightning-combobox>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="slds-grid slds-gutters slds-p-top_medium">
+                <div class="slds-col">
+                    <lightning-button 
+                        label="Reset Filters" 
+                        variant="neutral"
+                        onclick={handleReset}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    
+                    <lightning-button 
+                        label="Fetch Data" 
+                        variant="brand"
+                        onclick={handleFetchData}
+                        class="slds-m-right_x-small">
+                    </lightning-button>
+                    
+                    <lightning-button 
+                        label="Export to CSV" 
+                        variant="success"
+                        onclick={handleExport}
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div if:true={isLoading} class="slds-p-around_medium slds-text-align_center">
+                <lightning-spinner alternative-text="Loading data..." size="medium"></lightning-spinner>
+            </div>
+            
+            <!-- Data Preview (optional) -->
+            <div if:true={applications.length} class="slds-p-top_large">
+                <h2 class="slds-text-heading_medium slds-p-bottom_small">Data Preview</h2>
+                <div class="slds-box slds-theme_default">
+                    <p class="slds-text-body_small">{applications.length} records found. Only the first 5 are shown below.</p>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th scope="col"><div class="slds-truncate" title="Company">Company</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Position">Position</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Status">Status</div></th>
+                                <th scope="col"><div class="slds-truncate" title="Application Date">App Date</div></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={applications} for:item="app" for:index="index">
+                                <tr key={app.Id} if:true={index < 5} class="slds-hint-parent">
+                                    <td data-label="Company"><div class="slds-truncate" title={app.Company__c}>{app.Company__c}</div></td>
+                                    <td data-label="Position"><div class="slds-truncate" title={app.Position__c}>{app.Position__c}</div></td>
+                                    <td data-label="Status"><div class="slds-truncate" title={app.Status__c}>{app.Status__c}</div></td>
+                                    <td data-label="Application Date"><div class="slds-truncate" title={app.ApplicationDate__c}>{app.ApplicationDate__c}</div></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template> 

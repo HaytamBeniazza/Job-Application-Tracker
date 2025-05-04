@@ -8,37 +8,68 @@
         
         <div class="slds-tabs_default">
             <ul class="slds-tabs_default__nav" role="tablist">
-                <li class={listTabClass} role="presentation">
-                    <a class="slds-tabs_default__link" role="tab" tabindex="0" onclick={handleTabChange} data-tab-value="list">
-                        <lightning-icon icon-name="standard:list" size="small" class="slds-m-right_x-small"></lightning-icon>
+                <li class="slds-tabs_default__item" title="Dashboard" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" aria-selected={isDashboardActive} aria-controls="tab-dashboard" id="tab-dashboard__item" onclick={handleTabClick} data-tab-name="dashboard">
+                        <lightning-icon icon-name="standard:dashboard" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="slds-tabs_default__item" title="Applications" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected={isApplicationsActive} aria-controls="tab-applications" id="tab-applications__item" onclick={handleTabClick} data-tab-name="applications">
+                        <lightning-icon icon-name="standard:lead_list" size="small" class="slds-m-right_x-small"></lightning-icon>
                         Applications
                     </a>
                 </li>
-                <li class={calendarTabClass} role="presentation">
-                    <a class="slds-tabs_default__link" role="tab" tabindex="-1" onclick={handleTabChange} data-tab-value="calendar">
+                <li class="slds-tabs_default__item" title="Calendar" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected={isCalendarActive} aria-controls="tab-calendar" id="tab-calendar__item" onclick={handleTabClick} data-tab-name="calendar">
                         <lightning-icon icon-name="standard:event" size="small" class="slds-m-right_x-small"></lightning-icon>
                         Calendar
                     </a>
                 </li>
-                <li class={interviewsTabClass} role="presentation">
-                    <a class="slds-tabs_default__link" role="tab" tabindex="-1" onclick={handleTabChange} data-tab-value="interviews">
-                        <lightning-icon icon-name="standard:date_time" size="small" class="slds-m-right_x-small"></lightning-icon>
-                        Upcoming Interviews
+                <li class="slds-tabs_default__item" title="Reports" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected={isReportsActive} aria-controls="tab-reports" id="tab-reports__item" onclick={handleTabClick} data-tab-name="reports">
+                        <lightning-icon icon-name="standard:report" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        Reports
                     </a>
                 </li>
             </ul>
-            
-            <div class="slds-tabs_default__content" role="tabpanel">
-                <div if:true={isListTab}>
-                    <c-job-application-list></c-job-application-list>
+            <div id="tab-dashboard" class={dashboardTabClass} role="tabpanel" aria-labelledby="tab-dashboard__item">
+                <c-job-application-dashboard></c-job-application-dashboard>
+            </div>
+            <div id="tab-applications" class={applicationsTabClass} role="tabpanel" aria-labelledby="tab-applications__item">
+                <div class="slds-grid slds-gutters">
+                    <div class="slds-col slds-size_1-of-1">
+                        <c-job-application-form onsubmit={handleApplicationSubmit}></c-job-application-form>
+                    </div>
                 </div>
-                <div if:true={isCalendarTab}>
-                    <c-job-application-calendar></c-job-application-calendar>
+                <div class="slds-grid slds-gutters slds-p-top_medium">
+                    <div class="slds-col slds-size_1-of-1">
+                        <c-job-application-list applications={applications} onrefresh={refreshApplications}></c-job-application-list>
+                    </div>
                 </div>
-                <div if:true={isInterviewsTab}>
-                    <c-upcoming-interviews></c-upcoming-interviews>
+            </div>
+            <div id="tab-calendar" class={calendarTabClass} role="tabpanel" aria-labelledby="tab-calendar__item">
+                <c-job-application-calendar applications={applications}></c-job-application-calendar>
+            </div>
+            <div id="tab-reports" class={reportsTabClass} role="tabpanel" aria-labelledby="tab-reports__item">
+                <div class="slds-grid slds-gutters slds-wrap">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                        <c-job-application-export></c-job-application-export>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-bottom_medium">
+                        <c-upcoming-interviews></c-upcoming-interviews>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Modal for interview scheduling -->
+        <template if:true={showInterviewModal}>
+            <c-interview-date-modal
+                job-application-id={selectedApplicationId}
+                onclose={closeInterviewModal}
+                onsave={handleInterviewSave}>
+            </c-interview-date-modal>
+        </template>
     </div>
 </template> 

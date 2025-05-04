@@ -1,73 +1,110 @@
-# Job Application Tracker for Salesforce
+# Salesforce Job Application Tracker
 
-A comprehensive job application tracking system built on the Salesforce platform.
+A comprehensive Salesforce application designed to help job seekers track their job applications, interviews, and career progress.
 
 ## Features
 
-- **Track Job Applications**: Store and manage job applications including company, position, status, contact information, and notes.
-- **Calendar View**: Visualize application and interview dates in a calendar format.
-- **Status Management**: Update application statuses as they progress through the hiring pipeline.
-- **Email Reminders**: Receive automated email reminders before scheduled interviews.
-- **Comprehensive Test Coverage**: Full test suite for all Apex classes.
+- **Dashboard with Statistics**: Visual analytics showing application status distribution and monthly trends
+- **Job Application Management**: Create, track, and manage all your job applications in one place
+- **Interview Calendar**: Calendar view to track upcoming interviews and important dates
+- **Email Notifications**: Automated reminders for upcoming interviews
+- **Data Export**: Export your job application data to CSV for external analysis
+- **Mobile Responsive**: Access your job tracking data from any device
 
 ## Components
 
 ### Apex Classes
 
-- **JobApplicationController**: Handles record creation, retrieval, and status updates.
-- **JobApplicationEmailUtil**: Utility for sending email notifications.
-- **JobApplicationReminderScheduler**: Scheduled job to send email reminders for upcoming interviews.
-- **JobApplicationSetup**: Setup class to initialize the application.
-- **Test Classes**: Complete test coverage for all Apex code.
+- **JobApplicationController**: Main controller for job application operations
+- **JobApplicationEmailUtil**: Utilities for sending email notifications
+- **JobApplicationReminderBatch**: Batch job for sending interview reminders
+- **JobApplicationReminderScheduler**: Scheduler for the reminder batch job
+- **JobApplicationStatsController**: Controller for dashboard statistics
+- **JobApplicationExportController**: Controller for data export functionality
 
-### Lightning Web Components (LWC)
+### Lightning Web Components
 
-- **jobTrackerApp**: Main application component with tabbed interface.
-- **jobApplicationForm**: Form for creating new job applications.
-- **jobApplicationList**: Table view to display and manage job applications.
-- **jobApplicationCalendar**: Calendar view to visualize application and interview dates.
-- **upcomingInterviews**: Component to display upcoming interviews.
-- **interviewDateModal**: Modal for scheduling interview dates and times.
-- **jobTrackerUtils**: Utility functions for formatting dates and getting status colors.
-
-### Custom Object
-
-- **JobApplication__c**: Custom object to store job application data.
+- **jobTrackerApp**: Main application container with tabbed interface
+- **jobApplicationForm**: Form for creating and editing job applications
+- **jobApplicationList**: List view of all job applications
+- **jobApplicationCalendar**: Calendar view of application activities
+- **jobApplicationDashboard**: Dashboard with statistics and charts
+- **upcomingInterviews**: Component showing upcoming interview schedule
+- **interviewDateModal**: Modal for scheduling/rescheduling interviews
+- **jobApplicationExport**: Component for exporting application data
 
 ## Installation
 
-1. Deploy the code to your Salesforce org using the provided `package.xml`.
-2. Add the `jobTrackerApp` component to a Lightning App Page or Home Page.
-3. Initialize the application by executing `JobApplicationSetup.initialize()` in the Developer Console to set up the email reminder scheduled job.
+### Prerequisites
+
+- Salesforce org (Enterprise Edition or above recommended)
+- Salesforce CLI
+- VS Code with Salesforce Extensions
+
+### Deployment Steps
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/yourusername/job-application-tracker.git
+   ```
+
+2. Log in to your Salesforce org:
+   ```
+   sfdx force:auth:web:login -a YourOrgAlias
+   ```
+
+3. Deploy the components:
+   ```
+   sfdx force:source:deploy -p force-app
+   ```
+
+4. Assign permissions:
+   ```
+   sfdx force:user:permset:assign -n JobApplicationTracker
+   ```
+
+5. Initialize sample data (optional):
+   ```
+   sfdx force:apex:execute -f scripts/apex/init-data.apex
+   ```
 
 ## Usage
 
-1. Create new job applications using the application form.
-2. Update application statuses as they progress through the hiring process.
-3. View upcoming interviews and receive email reminders.
-4. Use the calendar view to manage your interview schedule.
+1. Navigate to the Job Application Tracker tab in Salesforce
+2. Use the form to add new job applications
+3. Track interview status and outcomes in the list view
+4. View upcoming interviews in the Calendar tab
+5. Monitor your job search progress in the Dashboard
+6. Export your data as needed using the Export function
 
-## Email Notifications
+## Scheduled Jobs
 
-Email reminders are automatically sent 24 hours before scheduled interviews. The email includes:
-- Company name
-- Position
-- Interview date and time
-- Contact information (if available)
+The application includes scheduled reminders for upcoming interviews. To activate this feature:
+
+1. Open Developer Console
+2. Execute the following Apex:
+   ```java
+   JobApplicationReminderScheduler.scheduleDaily();
+   ```
+
+This will schedule the reminder job to run daily at 8:00 AM.
 
 ## Customization
 
-This application can be customized by:
-- Adding new fields to the JobApplication__c object
-- Modifying the email template in JobApplicationEmailUtil
-- Adjusting the reminder schedule in JobApplicationReminderScheduler
+You can customize the application by:
 
-## Testing
+1. Modifying the JobApplication__c custom object to add additional fields
+2. Updating the LWC components to display your custom fields
+3. Creating additional reports and dashboards
 
-The application includes comprehensive test classes for all Apex code:
-- JobApplicationControllerTest
-- JobApplicationEmailUtilTest
-- JobApplicationReminderSchedulerTest
-- JobApplicationSetupTest
+## Security
 
-These tests provide full coverage of all business logic and functionality. 
+The application uses with sharing Apex classes to enforce Salesforce security controls. Make sure users have appropriate permissions to:
+
+- Create, Read, Update and Delete JobApplication__c records
+- Send emails
+- Access reports and dashboards
+
+## Support and Contributions
+
+For questions, bug reports, or feature requests, please open an issue in the repository. Pull requests for improvements are welcome. 
