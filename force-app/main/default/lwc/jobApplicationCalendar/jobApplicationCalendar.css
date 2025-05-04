@@ -1,0 +1,84 @@
+.calendar-container {
+    border: 1px solid #d8dde6;
+    border-radius: 0.25rem;
+    background-color: #ffffff;
+}
+
+.calendar-header {
+    border-bottom: 1px solid #d8dde6;
+    background-color: #f3f2f2;
+}
+
+.calendar-header-day {
+    flex: 1;
+    text-align: center;
+    font-weight: bold;
+    color: #706e6b;
+    padding: 0.5rem;
+}
+
+.calendar-week {
+    border-bottom: 1px solid #d8dde6;
+}
+
+.calendar-day {
+    flex: 1;
+    min-height: 6rem;
+    border-right: 1px solid #d8dde6;
+    padding: 0.25rem;
+}
+
+.calendar-day:last-child {
+    border-right: none;
+}
+
+.today {
+    background-color: #f3f3ff;
+}
+
+.day-number {
+    text-align: right;
+    color: #706e6b;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+.event-list {
+    margin-top: 0.25rem;
+}
+
+.event {
+    font-size: 0.75rem;
+    padding: 0.125rem;
+    margin-bottom: 0.125rem;
+    border-radius: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.application-event {
+    background-color: #e3f3ff;
+    border-left: 3px solid #0070d2;
+}
+
+.interview-event {
+    background-color: #d8ffd8;
+    border-left: 3px solid #04844b;
+}
+
+.legend-dot {
+    display: inline-block;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    margin-right: 0.25rem;
+}
+
+.application-legend {
+    background-color: #0070d2;
+}
+
+.interview-legend {
+    background-color: #04844b;
+} 

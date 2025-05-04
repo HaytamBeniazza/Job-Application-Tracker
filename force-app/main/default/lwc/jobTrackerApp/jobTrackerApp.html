@@ -1,0 +1,44 @@
+<template>
+    <div class="job-tracker-app">
+        <div class="slds-grid slds-grid_vertical-align-center slds-p-bottom_medium">
+            <div class="slds-col">
+                <h1 class="slds-text-heading_large">Job Application Tracker</h1>
+            </div>
+        </div>
+        
+        <div class="slds-tabs_default">
+            <ul class="slds-tabs_default__nav" role="tablist">
+                <li class={listTabClass} role="presentation">
+                    <a class="slds-tabs_default__link" role="tab" tabindex="0" onclick={handleTabChange} data-tab-value="list">
+                        <lightning-icon icon-name="standard:list" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        Applications
+                    </a>
+                </li>
+                <li class={calendarTabClass} role="presentation">
+                    <a class="slds-tabs_default__link" role="tab" tabindex="-1" onclick={handleTabChange} data-tab-value="calendar">
+                        <lightning-icon icon-name="standard:event" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        Calendar
+                    </a>
+                </li>
+                <li class={interviewsTabClass} role="presentation">
+                    <a class="slds-tabs_default__link" role="tab" tabindex="-1" onclick={handleTabChange} data-tab-value="interviews">
+                        <lightning-icon icon-name="standard:date_time" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        Upcoming Interviews
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="slds-tabs_default__content" role="tabpanel">
+                <div if:true={isListTab}>
+                    <c-job-application-list></c-job-application-list>
+                </div>
+                <div if:true={isCalendarTab}>
+                    <c-job-application-calendar></c-job-application-calendar>
+                </div>
+                <div if:true={isInterviewsTab}>
+                    <c-upcoming-interviews></c-upcoming-interviews>
+                </div>
+            </div>
+        </div>
+    </div>
+</template> 

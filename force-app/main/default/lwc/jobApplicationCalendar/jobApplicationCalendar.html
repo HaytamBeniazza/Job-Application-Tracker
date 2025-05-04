@@ -1,0 +1,80 @@
+<template>
+    <div class="job-application-calendar">
+        <lightning-card title="Application Calendar" icon-name="standard:event">
+            <!-- Calendar header -->
+            <div class="slds-grid slds-grid_align-spread slds-p-horizontal_medium slds-p-bottom_small">
+                <div>
+                    <h2 class="slds-text-heading_medium">{formattedMonthYear}</h2>
+                </div>
+                <div>
+                    <lightning-button-group>
+                        <lightning-button
+                            label="Previous"
+                            icon-name="utility:chevronleft"
+                            onclick={handlePreviousMonth}>
+                        </lightning-button>
+                        <lightning-button
+                            label="Next"
+                            icon-name="utility:chevronright"
+                            onclick={handleNextMonth}>
+                        </lightning-button>
+                    </lightning-button-group>
+                </div>
+            </div>
+            
+            <!-- Loading spinner -->
+            <lightning-spinner if:true={isLoading} alternative-text="Loading" size="small"></lightning-spinner>
+            
+            <!-- Calendar grid -->
+            <div class="slds-card__body slds-card__body_inner">
+                <div class="calendar-container">
+                    <!-- Calendar header (days of the week) -->
+                    <div class="slds-grid slds-grid_align-spread calendar-header">
+                        <template for:each={daysOfWeek} for:item="dayName">
+                            <div key={dayName} class="slds-p-around_x-small calendar-header-day slds-text-align_center">
+                                {dayName}
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <!-- Calendar body (weeks) -->
+                    <div class="calendar-body">
+                        <template for:each={weeks} for:item="week" for:index="weekIndex">
+                            <div key={weekIndex} class="slds-grid slds-grid_align-spread calendar-week">
+                                <template for:each={week} for:item="day" for:index="dayIndex">
+                                    <div key={dayIndex} class={day.isToday ? 'slds-p-around_x-small calendar-day today' : 'slds-p-around_x-small calendar-day'}>
+                                        <!-- Day number -->
+                                        <div class="day-number slds-text-align_right">{day.day}</div>
+                                        
+                                        <!-- Events for the day -->
+                                        <template if:true={day.events.length}>
+                                            <ul class="slds-has-dividers_bottom-space event-list">
+                                                <template for:each={day.events} for:item="event">
+                                                    <li key={event.id} class={event.type === 'interview' ? 'slds-item event interview-event' : 'slds-item event application-event'}>
+                                                        <div class="slds-truncate" title={event.title}>
+                                                            {event.title}
+                                                        </div>
+                                                    </li>
+                                                </template>
+                                            </ul>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                
+                <!-- Calendar legend -->
+                <div class="slds-grid slds-grid_align-center slds-p-top_medium">
+                    <div class="slds-p-horizontal_small">
+                        <span class="legend-dot application-legend"></span> Application
+                    </div>
+                    <div class="slds-p-horizontal_small">
+                        <span class="legend-dot interview-legend"></span> Interview
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+    </div>
+</template> 

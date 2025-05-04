@@ -1,0 +1,64 @@
+<template>
+    <div class="slds-card">
+        <lightning-card title="New Job Application" icon-name="standard:opportunity">
+            <div class="slds-card__body slds-card__body_inner">
+                <lightning-spinner if:true={isLoading} alternative-text="Creating job application" size="small"></lightning-spinner>
+                
+                <form class="slds-form slds-form_stacked">
+                    <lightning-input 
+                        label="Company" 
+                        name="company" 
+                        value={jobApplication.company}
+                        onchange={handleInputChange}
+                        required>
+                    </lightning-input>
+                    
+                    <lightning-input 
+                        label="Position" 
+                        name="position" 
+                        value={jobApplication.position}
+                        onchange={handleInputChange}
+                        required>
+                    </lightning-input>
+                    
+                    <lightning-input 
+                        type="date" 
+                        label="Application Date" 
+                        name="applicationDate" 
+                        value={jobApplication.applicationDate}
+                        onchange={handleInputChange}
+                        required>
+                    </lightning-input>
+                    
+                    <lightning-input 
+                        label="Contact Name" 
+                        name="contactName" 
+                        value={jobApplication.contactName}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                    
+                    <lightning-input 
+                        type="email" 
+                        label="Contact Email" 
+                        name="contactEmail" 
+                        value={jobApplication.contactEmail}
+                        onchange={handleInputChange}>
+                    </lightning-input>
+                    
+                    <div class="slds-m-top_medium">
+                        <lightning-button 
+                            label="Cancel" 
+                            onclick={handleCancel} 
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            variant="brand" 
+                            label="Save" 
+                            onclick={handleSubmit}>
+                        </lightning-button>
+                    </div>
+                </form>
+            </div>
+        </lightning-card>
+    </div>
+</template> 

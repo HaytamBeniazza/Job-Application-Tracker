@@ -1,0 +1,114 @@
+<template>
+    <div class="job-application-list">
+        <lightning-card title="Job Applications" icon-name="standard:opportunity">
+            <!-- Header actions -->
+            <div slot="actions">
+                <lightning-button-group>
+                    <lightning-button 
+                        label="New Application" 
+                        icon-name="utility:add" 
+                        onclick={handleNewApplication}>
+                    </lightning-button>
+                    <lightning-button 
+                        label="Refresh" 
+                        icon-name="utility:refresh" 
+                        onclick={refreshData}>
+                    </lightning-button>
+                </lightning-button-group>
+            </div>
+            
+            <div class="slds-card__body slds-card__body_inner">
+                <!-- Loading spinner -->
+                <lightning-spinner if:true={isLoading} alternative-text="Loading" size="small"></lightning-spinner>
+                
+                <!-- Form for new application -->
+                <div if:true={showNewForm} class="slds-m-bottom_medium">
+                    <c-job-application-form 
+                        onsuccess={handleFormSuccess}
+                        oncancel={handleFormCancel}>
+                    </c-job-application-form>
+                </div>
+                
+                <!-- View filter -->
+                <div class="slds-m-bottom_medium">
+                    <lightning-radio-group 
+                        name="viewOptions"
+                        label="View"
+                        options={viewOptions}
+                        value={selectedView}
+                        onchange={handleViewChange}
+                        type="button"
+                        variant="brand">
+                    </lightning-radio-group>
+                </div>
+                
+                <!-- Applications data table -->
+                <div if:true={filteredApplications.length} class="slds-table_bordered">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">Company</th>
+                                <th class="slds-text-title_caps" scope="col">Position</th>
+                                <th class="slds-text-title_caps" scope="col">Status</th>
+                                <th class="slds-text-title_caps" scope="col">Application Date</th>
+                                <th class="slds-text-title_caps" scope="col">Interview Date</th>
+                                <th class="slds-text-title_caps" scope="col">Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={filteredApplications} for:item="app">
+                                <tr key={app.Id} class="slds-hint-parent">
+                                    <td>
+                                        <div class="slds-truncate">{app.Company__c}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{app.Position__c}</div>
+                                    </td>
+                                    <td>
+                                        <lightning-combobox
+                                            value={app.Status__c}
+                                            options={statusOptions}
+                                            variant="label-hidden"
+                                            data-recordid={app.Id}
+                                            onchange={handleStatusChange}>
+                                        </lightning-combobox>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{app.formattedApplicationDate}</div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">{app.formattedInterviewDate}</div>
+                                    </td>
+                                    <td>
+                                        <div if:true={app.ContactName__c} class="slds-truncate">
+                                            {app.ContactName__c}
+                                            <template if:true={app.ContactEmail__c}>
+                                                <div class="slds-truncate slds-text-body_small">
+                                                    <a href={app.ContactEmail__c} target="_blank">{app.ContactEmail__c}</a>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Empty state -->
+                <div if:false={filteredApplications.length} class="slds-illustration slds-illustration_small">
+                    <div class="slds-text-longform">
+                        <h3 class="slds-text-heading_medium">No job applications found</h3>
+                        <p class="slds-text-body_regular">Try changing your filter or create a new application.</p>
+                    </div>
+                </div>
+            </div>
+        </lightning-card>
+        
+        <!-- Modal for interview date -->
+        <div class="interview-date-modal slds-hide">
+            <!-- Interview date modal implementation would go here -->
+            <!-- For simplicity, this would be a separate component -->
+        </div>
+    </div>
+</template> 
