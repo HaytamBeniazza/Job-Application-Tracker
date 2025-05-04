@@ -105,10 +105,11 @@
             </div>
         </lightning-card>
         
-        <!-- Modal for interview date -->
-        <div class="interview-date-modal slds-hide">
-            <!-- Interview date modal implementation would go here -->
-            <!-- For simplicity, this would be a separate component -->
-        </div>
+        <!-- Interview Date Modal -->
+        <c-interview-date-modal
+            class="interview-date-modal"
+            onsave={handleInterviewDateSave}
+            oncancel={handleInterviewDateCancel}>
+        </c-interview-date-modal>
     </div>
 </template> 

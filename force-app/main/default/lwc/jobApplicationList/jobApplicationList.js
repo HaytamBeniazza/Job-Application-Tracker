@@ -70,14 +70,24 @@ export default class JobApplicationList extends LightningElement {
     
     // Prompt for interview date
     promptForInterviewDate(recordId, status) {
-        // Use modal or other UI to get interview date
-        // For simplicity, we'll just use a date-time picker in a modal
+        // Get the modal component and set its properties
         const modal = this.template.querySelector('.interview-date-modal');
         if (modal) {
             modal.recordId = recordId;
             modal.status = status;
             modal.show();
         }
+    }
+    
+    // Handle interview date save
+    handleInterviewDateSave(event) {
+        const { recordId, status, interviewDateTime } = event.detail;
+        this.updateStatus(recordId, status, interviewDateTime);
+    }
+    
+    // Handle interview date cancel
+    handleInterviewDateCancel() {
+        // No action needed, modal will close itself
     }
     
     // Update the status
