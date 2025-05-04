@@ -1,29 +1,20 @@
 global class JobApplicationReminderScheduler implements Schedulable {
     
+    // Batch size for processing job applications
+    private static final Integer BATCH_SIZE = 50;
+    
     /**
      * Executes the scheduled job to send reminders for upcoming interviews
      * @param context The SchedulableContext
      */
     global void execute(SchedulableContext context) {
-        // Find Job Applications with interviews scheduled within the next 24 hours
-        // that haven't had a reminder sent yet
-        DateTime now = DateTime.now();
-        DateTime tomorrow = now.addDays(1);
+        // Start the batch job to send reminders
+        JobApplicationReminderBatch batchJob = new JobApplicationReminderBatch();
+        Database.executeBatch(batchJob, BATCH_SIZE);
         
-        List<JobApplication__c> jobApplications = [
-            SELECT Id, Name, Company__c, Position__c, InterviewDate__c, 
-                   ContactName__c, ContactEmail__c, ReminderSent__c
-            FROM JobApplication__c
-            WHERE Status__c = 'Interview Scheduled'
-            AND InterviewDate__c > :now
-            AND InterviewDate__c < :tomorrow
-            AND ReminderSent__c = false
-        ];
-        
-        for (JobApplication__c jobApp : jobApplications) {
-            // Send the reminder email
-            JobApplicationEmailUtil.sendInterviewReminder(jobApp);
-        }
+        // Log that the job started
+        System.debug('Job Application Reminder batch job scheduled by ' + 
+                    UserInfo.getName() + ' at ' + DateTime.now());
     }
     
     /**
@@ -54,6 +45,7 @@ global class JobApplicationReminderScheduler implements Schedulable {
             System.debug('Job Application Reminder scheduler has been set up to run daily at 8:00 AM');
         } catch (Exception e) {
             System.debug('Error scheduling Job Application Reminder: ' + e.getMessage());
+            throw e;  // Re-throw the exception to ensure it's handled by the caller
         }
     }
 } 
