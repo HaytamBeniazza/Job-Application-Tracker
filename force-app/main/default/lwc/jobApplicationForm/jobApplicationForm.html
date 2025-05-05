@@ -47,18 +47,29 @@
                     
                     <div class="slds-m-top_medium">
                         <lightning-button 
-                            label="Cancel" 
                             onclick={handleCancel} 
-                            class="slds-m-right_x-small">
+                            label="Cancel" 
+                            class="slds-m-right_small">
                         </lightning-button>
                         <lightning-button 
                             variant="brand" 
-                            label="Save" 
-                            onclick={handleSubmit}>
+                            type="submit" 
+                            name="save"
+                            label="Save">
                         </lightning-button>
                     </div>
                 </form>
             </div>
         </lightning-card>
+        
+        <!-- Document Section - Only visible when editing an existing record -->
+        <template if:true={recordId}>
+            <div class="slds-m-top_medium slds-border_top">
+                <div class="slds-p-top_medium">
+                    <h3 class="slds-text-heading_small slds-m-bottom_small">Application Documents</h3>
+                    <c-document-manager record-id={recordId}></c-document-manager>
+                </div>
+            </div>
+        </template>
     </div>
 </template> 

@@ -1,0 +1,312 @@
+<template>
+    <div class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <lightning-icon icon-name="standard:document" size="small"></lightning-icon>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <span>Documents</span>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <template if:true={allowUploads}>
+                        <lightning-button-group>
+                            <lightning-button 
+                                label="Add Document" 
+                                icon-name="utility:add" 
+                                onclick={handleNewDocumentClick}>
+                            </lightning-button>
+                            <lightning-button 
+                                if:true={recordId}
+                                label="Use Existing" 
+                                icon-name="utility:link" 
+                                onclick={handleAddExistingDocumentClick}>
+                            </lightning-button>
+                        </lightning-button-group>
+                    </template>
+                </div>
+            </header>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="slds-is-relative slds-m-around_medium">
+                <lightning-spinner alternative-text="Loading documents" size="small"></lightning-spinner>
+            </div>
+        </template>
+        
+        <!-- Document List -->
+        <div class="slds-card__body slds-card__body_inner">
+            <template if:true={hasDocuments}>
+                <div class="slds-grid slds-wrap">
+                    <template for:each={documents} for:item="doc">
+                        <div key={doc.junctionId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-p-around_xx-small">
+                            <div class="slds-box slds-box_link slds-box_x-small document-card">
+                                <div class="slds-grid slds-grid_vertical">
+                                    <div class="slds-grid slds-grid_align-spread slds-m-bottom_x-small">
+                                        <span class="slds-badge" class={getDocTypeClass(doc.documentType)}>
+                                            {doc.documentType}
+                                        </span>
+                                        <lightning-button-menu alternative-text="Show menu" variant="border-filled" icon-name="utility:down">
+                                            <lightning-menu-item 
+                                                label="View" 
+                                                value="view" 
+                                                onclick={handleViewDocument}
+                                                data-url={doc.fileUrl}>
+                                            </lightning-menu-item>
+                                            <template if:true={recordId}>
+                                                <lightning-menu-item 
+                                                    label="Remove from Application" 
+                                                    value="remove" 
+                                                    onclick={handleRemoveDocument}
+                                                    data-id={doc.junctionId}>
+                                                </lightning-menu-item>
+                                            </template>
+                                            <lightning-menu-item 
+                                                if:true={allowUploads}
+                                                label="Delete Document" 
+                                                value="delete" 
+                                                onclick={handleDeleteDocument}
+                                                data-id={doc.documentId}>
+                                            </lightning-menu-item>
+                                        </lightning-button-menu>
+                                    </div>
+                                    <div class="slds-media">
+                                        <div class="slds-media__figure">
+                                            <lightning-icon 
+                                                icon-name={getDocIcon(doc.documentType)} 
+                                                size="small">
+                                            </lightning-icon>
+                                        </div>
+                                        <div class="slds-media__body">
+                                            <h3 class="slds-text-heading_small slds-truncate" title={doc.name}>
+                                                <a href={doc.fileUrl} target="_blank">{doc.name}</a>
+                                            </h3>
+                                            <div class="slds-grid slds-grid_align-spread slds-m-top_xx-small">
+                                                <span class="slds-text-body_small">Version {doc.version}</span>
+                                                <span class="slds-text-body_small">
+                                                    <lightning-formatted-date-time value={doc.createdDate}></lightning-formatted-date-time>
+                                                </span>
+                                            </div>
+                                            <template if:true={doc.description}>
+                                                <p class="slds-text-body_small slds-m-top_x-small doc-description">
+                                                    {doc.description}
+                                                </p>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+            
+            <!-- No Documents Message -->
+            <template if:true={hasNoDocuments}>
+                <div class="slds-illustration slds-illustration_small slds-p-around_medium">
+                    <div class="slds-text-longform slds-text-align_center">
+                        <h3 class="slds-text-heading_medium">No documents found</h3>
+                        <p class="slds-text-body_regular">
+                            <template if:true={recordId}>
+                                No documents are associated with this job application yet.
+                            </template>
+                            <template if:false={recordId}>
+                                No documents have been added to the system yet.
+                            </template>
+                        </p>
+                        <template if:true={allowUploads}>
+                            <div class="slds-m-top_medium">
+                                <lightning-button 
+                                    label="Add Document" 
+                                    variant="brand" 
+                                    icon-name="utility:add"
+                                    onclick={handleNewDocumentClick}>
+                                </lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+        
+        <!-- New Document Modal -->
+        <template if:true={showNewDocumentModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title slds-hyphenate">Add New Document</h2>
+                        <lightning-button-icon 
+                            icon-name="utility:close" 
+                            variant="bare-inverse" 
+                            alternative-text="Close" 
+                            size="large"
+                            onclick={handleCancelNewDocument} 
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-input 
+                            label="Document Name" 
+                            required
+                            value={newDocument.name} 
+                            onchange={handleDocumentNameChange}>
+                        </lightning-input>
+                        
+                        <lightning-combobox 
+                            label="Document Type" 
+                            value={newDocument.documentType} 
+                            options={documentTypeOptions} 
+                            onchange={handleDocumentTypeChange} 
+                            class="slds-m-top_small">
+                        </lightning-combobox>
+                        
+                        <lightning-input 
+                            type="number" 
+                            label="Version" 
+                            value={newDocument.version}
+                            step="0.1"
+                            min="1.0"
+                            onchange={handleVersionChange} 
+                            class="slds-m-top_small">
+                        </lightning-input>
+                        
+                        <lightning-input 
+                            type="url" 
+                            label="File URL" 
+                            required
+                            value={newDocument.fileUrl} 
+                            onchange={handleFileUrlChange} 
+                            class="slds-m-top_small">
+                        </lightning-input>
+                        
+                        <lightning-textarea 
+                            label="Description" 
+                            value={newDocument.description} 
+                            onchange={handleDescriptionChange} 
+                            class="slds-m-top_small">
+                        </lightning-textarea>
+                        
+                        <p class="slds-text-body_small slds-m-top_small">
+                            Note: For file storage, upload your document to a cloud storage provider like 
+                            Google Drive, OneDrive, Dropbox, etc., and paste the shared URL here.
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="Cancel" 
+                            variant="neutral" 
+                            onclick={handleCancelNewDocument} 
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Save" 
+                            variant="brand" 
+                            onclick={handleSaveDocument} 
+                            disabled={isNewDocumentFormValid}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        
+        <!-- Add Existing Document Modal -->
+        <template if:true={showAddExistingModal}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title slds-hyphenate">Add Existing Document</h2>
+                        <lightning-button-icon 
+                            icon-name="utility:close" 
+                            variant="bare-inverse" 
+                            alternative-text="Close" 
+                            size="large"
+                            onclick={handleCancelAddExisting} 
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <lightning-combobox 
+                            label="Select Document" 
+                            value={selectedDocumentId}
+                            options={availableDocumentsForAssociation}
+                            onchange={handleDocumentSelection}>
+                        </lightning-combobox>
+                        
+                        <template if:true={availableDocumentsForAssociation.length}>
+                            <p class="slds-text-body_small slds-m-top_small">
+                                Select an existing document to associate with this job application.
+                            </p>
+                        </template>
+                        
+                        <template if:false={availableDocumentsForAssociation.length}>
+                            <p class="slds-text-body_small slds-m-top_small">
+                                No available documents to associate. All documents are already associated with this application 
+                                or no documents exist in the system.
+                            </p>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="Cancel" 
+                            variant="neutral" 
+                            onclick={handleCancelAddExisting} 
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Associate" 
+                            variant="brand" 
+                            onclick={handleAssociateDocument} 
+                            disabled={!selectedDocumentId}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+        
+        <!-- Delete Confirmation Modal -->
+        <template if:true={showDeleteConfirmation}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title slds-hyphenate">Delete Document</h2>
+                        <lightning-button-icon 
+                            icon-name="utility:close" 
+                            variant="bare-inverse" 
+                            alternative-text="Close" 
+                            size="large"
+                            onclick={handleCancelDelete} 
+                            class="slds-modal__close">
+                        </lightning-button-icon>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <p>
+                            Are you sure you want to delete this document? This action cannot be undone.
+                        </p>
+                        <p class="slds-text-color_error slds-m-top_small">
+                            This will also remove the document from all job applications it's associated with.
+                        </p>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button 
+                            label="Cancel" 
+                            variant="neutral" 
+                            onclick={handleCancelDelete} 
+                            class="slds-m-right_x-small">
+                        </lightning-button>
+                        <lightning-button 
+                            label="Delete" 
+                            variant="destructive" 
+                            onclick={handleConfirmDelete}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+    </div>
+</template> 
