@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <label>JavaScript</label>
+    <protected>false</protected>
+    <values>
+        <field>Category__c</field>
+        <value xsi:type="xsd:string">Technical</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Proficiency in JavaScript programming language, including ES6+ features, DOM manipulation, and asynchronous programming.</value>
+    </values>
+    <values>
+        <field>IsActive__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>Keywords__c</field>
+        <value xsi:type="xsd:string">javascript, js, es6, ecmascript, node.js, nodejs, vue, react, angular</value>
+    </values>
+    <values>
+        <field>RelatedSkills__c</field>
+        <value xsi:type="xsd:string">HTML5,CSS3,TypeScript</value>
+    </values>
+</CustomMetadata> 

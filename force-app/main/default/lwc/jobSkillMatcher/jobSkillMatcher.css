@@ -1,0 +1,8 @@
+.jobDescriptionInput {
+    min-height: 200px;
+}
+
+.slds-progress-bar {
+    height: 0.75rem;
+    border-radius: 0.75rem;
+} 

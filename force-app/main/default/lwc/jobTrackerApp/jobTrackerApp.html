@@ -26,6 +26,12 @@
                         Calendar
                     </a>
                 </li>
+                <li class="slds-tabs_default__item" title="AI Job Matcher" role="presentation">
+                    <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected={isAiMatcherActive} aria-controls="tab-aimatcher" id="tab-aimatcher__item" onclick={handleTabClick} data-tab-name="aimatcher">
+                        <lightning-icon icon-name="standard:einstein" size="small" class="slds-m-right_x-small"></lightning-icon>
+                        AI Job Matcher
+                    </a>
+                </li>
                 <li class="slds-tabs_default__item" title="Reports" role="presentation">
                     <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected={isReportsActive} aria-controls="tab-reports" id="tab-reports__item" onclick={handleTabClick} data-tab-name="reports">
                         <lightning-icon icon-name="standard:report" size="small" class="slds-m-right_x-small"></lightning-icon>
@@ -50,6 +56,9 @@
             </div>
             <div id="tab-calendar" class={calendarTabClass} role="tabpanel" aria-labelledby="tab-calendar__item">
                 <c-job-application-calendar applications={applications}></c-job-application-calendar>
+            </div>
+            <div id="tab-aimatcher" class={aiMatcherTabClass} role="tabpanel" aria-labelledby="tab-aimatcher__item">
+                <c-job-skill-matcher></c-job-skill-matcher>
             </div>
             <div id="tab-reports" class={reportsTabClass} role="tabpanel" aria-labelledby="tab-reports__item">
                 <div class="slds-grid slds-gutters slds-wrap">

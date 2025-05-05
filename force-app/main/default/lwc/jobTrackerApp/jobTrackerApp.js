@@ -22,6 +22,10 @@ export default class JobTrackerApp extends LightningElement {
         return this.activeTab === 'calendar';
     }
     
+    get isAiMatcherActive() {
+        return this.activeTab === 'aimatcher';
+    }
+    
     get isReportsActive() {
         return this.activeTab === 'reports';
     }
@@ -37,6 +41,10 @@ export default class JobTrackerApp extends LightningElement {
     
     get calendarTabClass() {
         return this.activeTab === 'calendar' ? 'slds-tabs_default__content slds-show' : 'slds-tabs_default__content slds-hide';
+    }
+    
+    get aiMatcherTabClass() {
+        return this.activeTab === 'aimatcher' ? 'slds-tabs_default__content slds-show' : 'slds-tabs_default__content slds-hide';
     }
     
     get reportsTabClass() {

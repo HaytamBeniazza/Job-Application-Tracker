@@ -1,0 +1,181 @@
+<template>
+    <lightning-card title="AI Job Skills Matcher" icon-name="standard:einstein">
+        <div class="slds-p-around_medium">
+            <div class="slds-m-bottom_medium">
+                <p class="slds-text-body_regular">
+                    Use AI to analyze job descriptions, identify required skills, and get customized recommendations.
+                </p>
+            </div>
+            
+            <!-- Job Description Input -->
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label" for="jobDescription">
+                    <span class="slds-text-title_bold">Job Description</span>
+                </label>
+                <div class="slds-form-element__control">
+                    <lightning-textarea
+                        name="jobDescription"
+                        value={jobDescription}
+                        onchange={handleJobDescriptionChange}
+                        placeholder="Paste the job description here to analyze required skills..."
+                        class="jobDescriptionInput"
+                        rows="10"
+                    ></lightning-textarea>
+                </div>
+            </div>
+            
+            <!-- My Skills Selection -->
+            <div class="slds-form-element slds-m-bottom_medium">
+                <label class="slds-form-element__label">
+                    <span class="slds-text-title_bold">My Skills</span>
+                </label>
+                <div class="slds-form-element__control">
+                    <lightning-dual-listbox
+                        name="skills"
+                        label="Select your skills"
+                        source-label="Available Skills"
+                        selected-label="Your Skills"
+                        options={skillOptions}
+                        value={selectedSkills}
+                        onchange={handleSkillsChange}
+                    ></lightning-dual-listbox>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="slds-grid slds-gutters slds-m-top_medium">
+                <div class="slds-col">
+                    <lightning-button
+                        label="Analyze Job Description"
+                        variant="brand"
+                        onclick={handleAnalyzeClick}
+                        disabled={isAnalyzeDisabled}
+                        class="slds-m-right_small"
+                    ></lightning-button>
+                    
+                    <lightning-button
+                        label="Get Skill Recommendations"
+                        variant="brand"
+                        onclick={handleRecommendationsClick}
+                        disabled={isRecommendationsDisabled}
+                    ></lightning-button>
+                </div>
+            </div>
+            
+            <!-- Loading Spinner -->
+            <div if:true={isLoading} class="slds-is-relative slds-m-top_medium slds-m-bottom_medium">
+                <lightning-spinner alternative-text="Processing" size="medium"></lightning-spinner>
+            </div>
+            
+            <!-- Results Section -->
+            <div if:true={hasResults} class="slds-m-top_large">
+                <!-- Tabs for Results -->
+                <lightning-tabset>
+                    <!-- Skills Identified Tab -->
+                    <lightning-tab label="Skills Identified" icon-name="utility:skill_entity">
+                        <div if:true={matchedSkills.length} class="slds-m-top_medium">
+                            <div class="slds-grid slds-wrap">
+                                <template for:each={matchedSkills} for:item="skill">
+                                    <div key={skill.id} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-large-size_1-of-3 slds-p-around_x-small">
+                                        <lightning-card>
+                                            <h3 slot="title">
+                                                <div class="slds-grid slds-grid_vertical-align-center">
+                                                    <span class="slds-badge slds-badge_lightest slds-m-right_x-small" style={getSkillCategoryStyle(skill)}>
+                                                        {skill.category}
+                                                    </span>
+                                                    <div class="slds-truncate">{skill.name}</div>
+                                                </div>
+                                            </h3>
+                                            <div class="slds-p-horizontal_small slds-p-bottom_small">
+                                                <p if:true={skill.description} class="slds-m-bottom_small">{skill.description}</p>
+                                                <div>
+                                                    <p>Match Strength: </p>
+                                                    <lightning-progress-bar 
+                                                        value={skill.matchStrength} 
+                                                        size="large" 
+                                                        variant={getProgressBarVariant(skill.matchStrength)}>
+                                                    </lightning-progress-bar>
+                                                </div>
+                                                <div if:true={skill.isHighlighted} class="slds-text-color_success slds-m-top_small">
+                                                    <lightning-icon icon-name="utility:priority" size="x-small" class="slds-m-right_xx-small"></lightning-icon>
+                                                    Highly relevant skill
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div if:false={matchedSkills.length} class="slds-text-align_center slds-p-around_medium">
+                            <p>No skills identified. Please analyze a job description first.</p>
+                        </div>
+                    </lightning-tab>
+                    
+                    <!-- Recommendations Tab -->
+                    <lightning-tab label="Recommendations" icon-name="utility:custom_apps">
+                        <div if:true={recommendations.length} class="slds-m-top_medium">
+                            <div class="slds-grid slds-wrap">
+                                <template for:each={recommendationsByType.highlight} for:item="rec">
+                                    <div key={rec.skillId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_x-small">
+                                        <lightning-card title={rec.skillName} icon-name="utility:success">
+                                            <div class="slds-p-horizontal_small slds-p-bottom_small">
+                                                <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                                    <span class="slds-badge slds-badge_success slds-m-right_x-small">Highlight</span>
+                                                    <span class="slds-badge slds-badge_lightest">{rec.category}</span>
+                                                </div>
+                                                <p>{rec.recommendationText}</p>
+                                                <div class="slds-m-top_small">
+                                                    <p>Match Strength: </p>
+                                                    <lightning-progress-bar value={rec.matchStrength} size="large" variant="success"></lightning-progress-bar>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </div>
+                                </template>
+                                
+                                <template for:each={recommendationsByType.acquire} for:item="rec">
+                                    <div key={rec.skillId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_x-small">
+                                        <lightning-card title={rec.skillName} icon-name="utility:knowledge_base">
+                                            <div class="slds-p-horizontal_small slds-p-bottom_small">
+                                                <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                                    <span class="slds-badge slds-badge_warning slds-m-right_x-small">Acquire</span>
+                                                    <span class="slds-badge slds-badge_lightest">{rec.category}</span>
+                                                </div>
+                                                <p>{rec.recommendationText}</p>
+                                                <div class="slds-m-top_small">
+                                                    <p>Match Strength: </p>
+                                                    <lightning-progress-bar value={rec.matchStrength} size="large" variant="warning"></lightning-progress-bar>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </div>
+                                </template>
+                                
+                                <template for:each={recommendationsByType.related} for:item="rec">
+                                    <div key={rec.skillId} class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-p-around_x-small">
+                                        <lightning-card title={rec.skillName} icon-name="utility:connected_apps">
+                                            <div class="slds-p-horizontal_small slds-p-bottom_small">
+                                                <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                                    <span class="slds-badge slds-badge_info slds-m-right_x-small">Related</span>
+                                                    <span class="slds-badge slds-badge_lightest">{rec.category}</span>
+                                                </div>
+                                                <p>{rec.recommendationText}</p>
+                                                <div class="slds-m-top_small">
+                                                    <p>Match Strength: </p>
+                                                    <lightning-progress-bar value={rec.matchStrength} size="large" variant="info"></lightning-progress-bar>
+                                                </div>
+                                            </div>
+                                        </lightning-card>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                        <div if:false={recommendations.length} class="slds-text-align_center slds-p-around_medium">
+                            <p>No recommendations available. Please analyze a job description and select your skills first.</p>
+                        </div>
+                    </lightning-tab>
+                </lightning-tabset>
+            </div>
+        </div>
+    </lightning-card>
+</template> 
